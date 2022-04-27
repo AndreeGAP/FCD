@@ -1,0 +1,38 @@
+﻿
+@page "/pregunta/edit/{id:int}"
+@using FCD.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager Navigation
+<h3>Editar Pregunta</h3>
+@if (_pregunta == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <EditForm>
+        <div class="form-group">
+            <label>Contenido: </label>
+            <InputText @bind-Value="_pregunta.contenido" />
+        </div>
+        <br>
+        <div class="form-group">
+            <input type="submit" class="btn btn-success" value="Editar pregunta" />
+        </div>
+    </EditForm>
+}
+@code {
+    [Parameter]
+    public int id { set; get; }
+    private Pregunta _pregunta = null;
+    protected override async Task OnInitializedAsync()
+    {
+        _pregunta = await Http.GetFromJsonAsync<Pregunta>($"/api/Preguntas/{id}");
+    }
+    private async Task Put()
+    {
+        await Http.PutAsJsonAsync<Pregunta>($"/api/Preguntas/{_pregunta.id}", _pregunta);
+        Navigation.NavigateTo("/Preguntas");
+    }
+
+}

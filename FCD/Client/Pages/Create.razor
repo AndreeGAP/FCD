@@ -1,0 +1,28 @@
+﻿
+@page "/pregunta/create"
+@using FCD.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<h3>Agregar Pregunta</h3>
+
+
+<EditForm Model="@_pregunta" OnValidSubmit="Post">
+    <div class="form-group">
+        <label>Contenido Pregunta: </label>
+        <InputText @bind-Value="_pregunta.contenido" />
+    </div>
+    <br />
+    <div class="form-group">
+        <input type="submit" class="btn btn-success" value="Agregar Pregunta" />
+    </div>
+
+</EditForm>
+@code {
+    private Pregunta _pregunta = new();
+    private async Task Post()
+    {
+        await Http.PostAsJsonAsync<Pregunta>("/api/Preguntas/", _pregunta);
+        Navigation.NavigateTo("/preguntas");
+    }
+}

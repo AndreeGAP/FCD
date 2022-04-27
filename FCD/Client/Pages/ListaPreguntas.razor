@@ -1,0 +1,65 @@
+﻿@page "/preguntas"
+@using FCD.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager Navigation
+<h3>Lista Preguntas</h3>
+
+
+@if( _preguntas == null)
+{
+    <p><em>Cargando ...</em></p>
+}
+else
+{
+    <table>
+       <thead>
+           <tr>
+               <th>Id</th>
+               <th>Contenido</th>
+           </tr>
+       </thead>
+       <tbody>
+            @foreach(var pregunta in _preguntas)
+            {
+                <tr>
+                    <td>@pregunta.id</td>
+                    <td>@pregunta.contenido</td>
+                    <td>
+                        <button class="btn btn-info" @onclick="(() => Edit(pregunta.id))">
+                            Editar
+                        </button>
+                        <button class="btn btn-info" @onclick="(() => Delete(pregunta.id))">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div>
+        <button class="btn btn-succes" @onclick="Create">Añadir Pregunta</button>
+    </div>
+}
+
+
+@code {
+    private List<Pregunta>? _preguntas;
+    protected override async Task OnInitializedAsync()
+    {
+        _preguntas = await Http.GetFromJsonAsync<List<Pregunta>>("/api/Preguntas");
+    }
+    private async Task Delete(int id)
+    {
+        await Http.DeleteAsync($"/api/Preguntas/{id}");
+        _preguntas = await Http.GetFromJsonAsync<List<Pregunta>>("api/Preguntas");
+        StateHasChanged();
+    }
+    private void Edit(int id)
+    {
+        Navigation.NavigateTo($"/pregunta/edit/{id}");
+    }
+    private void Create()
+    {
+        Navigation.NavigateTo("/pregunta/create");
+    }
+}
